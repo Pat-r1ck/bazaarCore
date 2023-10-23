@@ -1,0 +1,11 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: GATEWAY
+  banner:
+    location: classpath:/static/banner.txt
+  profiles:
+    active: dev
+  config:
+    import: optional:file:.env[.properties]
