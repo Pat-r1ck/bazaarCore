@@ -1,0 +1,14 @@
+server:
+  port:
+    8080
+spring:
+  application:
+    name: AUTH-CORE
+  banner:
+    location: classpath:/static/banner.txt
+  profiles:
+    active: dev
+  config:
+    import: optional:file:.env[.properties]
+jwt:
+  secret: ${JWT_SECRET_KEY}
