@@ -1,0 +1,12 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: PROFILE-SERVICE
+  banner:
+    location: classpath:/static/banner.txt
+  profiles:
+    active: dev
+  config:
+    import: optional:file:.env[.properties]
