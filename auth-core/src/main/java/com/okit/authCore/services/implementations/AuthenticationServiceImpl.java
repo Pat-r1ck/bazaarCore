@@ -1,7 +1,7 @@
 package com.okit.authCore.services.implementations;
 
 import com.okit.authCore.dto.*;
-import com.okit.authCore.exceptions.UsernameNotFoundException;
+import com.okit.authCore.exceptions.EmailNotFoundException;
 import com.okit.authCore.models.Role;
 import com.okit.authCore.models.User;
 import com.okit.authCore.repositories.RoleRepository;
@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -31,14 +32,13 @@ public class AuthenticationServiceImpl implements AuthenticationService
         Set<Role> roles = roleRepository.findByName(roleString);
 
         User user = User.builder()
-                .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .roles(roles)
                 .build();
 
         userRepository.save(user);
-        logger.info("user {} saved in database", request.getUsername());
+        logger.info("user {} saved in database", request.getEmail());
 
         HashMap<String, Object> claims = new HashMap<>()
         {{
@@ -54,21 +54,26 @@ public class AuthenticationServiceImpl implements AuthenticationService
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        String username = request.getUsername();
+        String email = request.getEmail();
         String password = request.getPassword();
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        username,
+                        email,
                         password
                 )
         );
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-        logger.info("found user with username {}", username);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EmailNotFoundException(email));
+        logger.info("found user with username {}", email);
 
-        String token = jwtService.generateJwt(user);
+        List<String> roles = userRepository.findRoles(email);
+        HashMap<String, Object> claims = new HashMap<>(){{
+            put("roles", roles);
+        }};
+
+        String token = jwtService.generateJwt(claims,user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -79,14 +84,14 @@ public class AuthenticationServiceImpl implements AuthenticationService
     public ValidateResponse validate(ValidateRequest request)
     {
         String token = request.getToken();
-        String username = jwtService.extractUsername(token);
+        String email = jwtService.extractEmail(token);
 
-        UserDetails userDetails = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+        UserDetails userDetails = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EmailNotFoundException(email));
 
         return ValidateResponse.builder()
                 .valid(jwtService.isJwtValid(token, userDetails))
-                .username(username)
+                .email(email)
                 .build();
     }
 

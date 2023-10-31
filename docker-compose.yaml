@@ -9,4 +9,4 @@ services:
     environment:
       - POSTGRES_USERNAME=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=authDB
+      - POSTGRES_DB=userDB

@@ -38,15 +38,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
         }
 
         final String jwt = authHeader.substring(7);
-        final String username = jwtService.extractUsername(jwt);
+        final String email = jwtService.extractEmail(jwt);
 
-        if (username == null || SecurityContextHolder.getContext().getAuthentication() != null)
+        if (email == null || SecurityContextHolder.getContext().getAuthentication() != null)
         {
             filterChain.doFilter(request, response);
             return;
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         if(!jwtService.isJwtValid(jwt, userDetails))
         {

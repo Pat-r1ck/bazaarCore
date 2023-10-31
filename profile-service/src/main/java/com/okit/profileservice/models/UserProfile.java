@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,8 +22,8 @@ import java.util.Date;
 public class UserProfile
 {
     @Id
-    @Email(message = UserProfileCoreConstants.EMPTY_EMAIL_MSG)
-    @Column(name = "email", nullable = false, unique = true)
+    @Email(message = UserProfileCoreConstants.INVALID_EMAIL_MSG)
+    @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;
 
     @NotEmpty(message = UserProfileCoreConstants.EMPTY_FIRST_NAME_MSG)

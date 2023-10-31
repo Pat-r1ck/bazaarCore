@@ -10,7 +10,7 @@ import java.util.function.Function;
 @Service
 public interface JwtService
 {
-    String extractUsername(String jwt);
+    String extractEmail(String jwt);
     <T> T extractClaim(String jwt, Function<Claims, T> claimsResolver);
     String generateJwt(Map<String, Object> claims, UserDetails userDetails);
     String generateJwt(UserDetails userDetails);
