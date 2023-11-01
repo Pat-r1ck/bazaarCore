@@ -1,4 +1,4 @@
-package com.okit.authCore.dto;
+package com.okit.profileservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ValidateResponse
+public class UpdateUserProfileResponse
 {
-    private String email;
-    private boolean valid;
+    private String msg;
 }

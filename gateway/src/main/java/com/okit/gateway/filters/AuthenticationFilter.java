@@ -18,9 +18,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import static com.okit.gateway.constants.RoutesConstants.JWT_SERVICE_ENDPOINT;
-import static com.okit.gateway.constants.RoutesConstants.AUTH_PREFIX;
-import static com.okit.gateway.constants.RoutesConstants.VALIDATE_ENDPOINT;
+import static com.okit.gateway.constants.RoutesConstants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -62,11 +60,13 @@ public class AuthenticationFilter implements GatewayFilter
                             return onError(exchange, HttpStatus.FORBIDDEN);
                         }
 
-                        exchange.getRequest().mutate()
-                                .header("username", res.getUsername())
+                        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                                .header("email", res.getEmail())
                                 .build();
 
-                        return chain.filter(exchange);
+                        ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
+
+                        return chain.filter(mutatedExchange);
                     });
         }
 

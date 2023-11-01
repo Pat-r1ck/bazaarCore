@@ -25,24 +25,20 @@ import java.util.Set;
 public class User implements UserDetails
 {
     @Id
-    @NotEmpty(message = UserCoreConstants.EMPTY_USERNAME_MSG)
-    @Column(name = "username",nullable = false, unique = true)
-    private String username;
+    @Email(message = UserCoreConstants.INVALID_EMAIL_MSG)
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
     @NotEmpty(message = UserCoreConstants.EMPTY_PASSWORD_MSG)
     @Column(name = "password", nullable = false)
     private String password;
-
-    @Email(message = UserCoreConstants.INVALID_EMAIL_MSG)
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(
-                    name = "username", referencedColumnName = "username"
+                    name = "email", referencedColumnName = "email"
             ),
             inverseJoinColumns = @JoinColumn(
                     name = "role", referencedColumnName = "name"
@@ -72,6 +68,11 @@ public class User implements UserDetails
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .toList();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override

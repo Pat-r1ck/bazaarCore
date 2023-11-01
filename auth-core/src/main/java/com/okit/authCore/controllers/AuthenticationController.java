@@ -23,7 +23,7 @@ public class AuthenticationController
             @RequestBody RegisterRequest request
     )
     {
-        logger.info("registering user with username {}", request.getUsername());
+        logger.info("registering user with email {}", request.getEmail());
         return new ResponseEntity<>(authService.register(request), HttpStatus.OK);
     }
 
@@ -32,7 +32,7 @@ public class AuthenticationController
             @RequestBody AuthenticationRequest request
     )
     {
-        logger.info("authenticating user with username {}", request.getUsername());
+        logger.info("authenticating user with email {}", request.getEmail());
         return new ResponseEntity<>(authService.authenticate(request), HttpStatus.OK);
     }
 

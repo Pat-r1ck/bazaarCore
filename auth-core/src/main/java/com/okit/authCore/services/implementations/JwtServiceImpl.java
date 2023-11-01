@@ -27,7 +27,7 @@ public class JwtServiceImpl implements JwtService
         this.SIGN_IN_KEY = getSignInKey();
     }
     @Override
-    public String extractUsername(String jwt)
+    public String extractEmail(String jwt)
     {
         return extractClaim(jwt,Claims::getSubject);
     }
@@ -60,8 +60,8 @@ public class JwtServiceImpl implements JwtService
     @Override
     public boolean isJwtValid(String jwt, UserDetails userDetails)
     {
-        final String username = extractUsername(jwt);
-        return username.equals(userDetails.getUsername()) && !isJwtExpired(jwt);
+        final String email = extractEmail(jwt);
+        return email.equals(userDetails.getUsername()) && !isJwtExpired(jwt);
     }
 
     private boolean isJwtExpired(String jwt)
