@@ -1,11 +1,9 @@
 package com.okit.profileservice.controllers;
 
-import com.okit.profileservice.dto.UpdateUserProfileIconRequest;
 import com.okit.profileservice.dto.UpdateUserProfileRequest;
 import com.okit.profileservice.dto.UpdateUserProfileResponse;
 import com.okit.profileservice.models.UserProfile;
 import com.okit.profileservice.services.UserProfileService;
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import java.text.ParseException;
 @RequestMapping("/api/v1/profile")
 public class UserProfileController
 {
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<UserProfile> getProfile(
             HttpServletRequest request
     )
@@ -32,7 +30,7 @@ public class UserProfileController
         return new ResponseEntity<>(userProfileService.getUserProfile(email), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UpdateUserProfileResponse> updateUserProfile(
             @ModelAttribute UpdateUserProfileRequest profileRequest,
             HttpServletRequest request
@@ -43,18 +41,7 @@ public class UserProfileController
         return new ResponseEntity<>(userProfileService.updateUserProfile(profileRequest,email), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/icon",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UpdateUserProfileResponse> updateUserProfileIcon(
-            @ModelAttribute UpdateUserProfileIconRequest profileRequest,
-            HttpServletRequest request
-    ) throws IOException
-    {
-        final String email = extractEmail(request);
-
-        return new ResponseEntity<>(userProfileService.updateUserIcon(profileRequest.getFile(), email),HttpStatus.CREATED);
-    }
-
-    @DeleteMapping(value = "/icon")
+    @DeleteMapping
     public ResponseEntity<UpdateUserProfileResponse> deleteUserProfileIcon(
             HttpServletRequest request
     )

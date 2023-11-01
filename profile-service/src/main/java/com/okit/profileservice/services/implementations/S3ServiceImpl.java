@@ -3,7 +3,7 @@ package com.okit.profileservice.services.implementations;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.okit.profileservice.services.StorageService;
+import com.okit.profileservice.services.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,7 @@ import java.io.File;
 
 @Service
 @RequiredArgsConstructor
-public class StorageServiceImpl implements StorageService
+public class S3ServiceImpl implements S3Service
 {
     @Override
     public void uploadFile(String fileName, File file)
@@ -27,7 +27,7 @@ public class StorageServiceImpl implements StorageService
     public void deleteFile(String fileName)
     {
         s3Client.deleteObject(
-                new DeleteObjectRequest(bucketName + "/", fileName)
+                new DeleteObjectRequest(bucketName, fileName)
         );
     }
 

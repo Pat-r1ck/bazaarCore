@@ -7,12 +7,12 @@ import com.okit.profileservice.exceptions.EmailNotFoundException;
 import com.okit.profileservice.mappers.UserProfileMapper;
 import com.okit.profileservice.models.UserProfile;
 import com.okit.profileservice.repositories.UserProfileRepository;
-import com.okit.profileservice.services.StorageService;
+import com.okit.profileservice.services.S3Service;
 import com.okit.profileservice.services.UserProfileService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,21 +37,18 @@ public class UserProfileServiceImpl implements UserProfileService
 
     @Override
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest request, String email)
-            throws ParseException, IOException {
+            throws ParseException, IOException
+    {
         final String DATE_FORMAT = "dd/MM/yyyy";
         final String fileName = "icon_" + email;
 
-        Optional<UserProfile> profileOptional = userProfileRepository.findByEmail(email);
-        logger.info("Found user {}", email);
+        final Optional<UserProfile> profileOptional = userProfileRepository.findByEmail(email);
 
-        if(profileOptional.isEmpty())
+        final MultipartFile icon = request.getIcon();
+
+        if(icon != null)
         {
-            File image = convertImageToFile(request.getIcon());
-
-            storageService.uploadFile(fileName, image);
-            logger.info("Uploaded image");
-
-            image.delete();
+            s3Task.upload(fileName, icon);
         }
 
         UserProfile userProfile = profileOptional.isEmpty() ?
@@ -61,32 +58,14 @@ public class UserProfileServiceImpl implements UserProfileService
                     .lastName(request.getLastName())
                     .academicYear(request.getAcademicYear())
                     .dob(new SimpleDateFormat(DATE_FORMAT).parse(request.getDob()))
-                    .icon(fileName)
+                    .icon(icon == null ? null : fileName)
                     .rating(0)
                     .build() :
                 profileOptional.get();
 
         profileMapper.updateUserProfile(request, userProfile);
+
         userProfileRepository.save(userProfile);
-        logger.info("user {} saved", email);
-
-        return UpdateUserProfileResponse.builder()
-                .msg(String.format(UserProfileCoreConstants.SUCCESSFULLY_UPDATE_USER_PROFILE_MSG, email))
-                .build();
-    }
-
-    @Override
-    public UpdateUserProfileResponse updateUserIcon(MultipartFile file, String email) throws IOException
-    {
-        UserProfile userProfile = userProfileRepository.findByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException(email));
-
-        File image = convertImageToFile(file);
-
-        storageService.uploadFile(userProfile.getIcon(), image);
-        logger.info("Updated image");
-
-        image.delete();
 
         return UpdateUserProfileResponse.builder()
                 .msg(String.format(UserProfileCoreConstants.SUCCESSFULLY_UPDATE_USER_PROFILE_MSG, email))
@@ -98,21 +77,11 @@ public class UserProfileServiceImpl implements UserProfileService
     {
         final String fileName = "icon_" + email;
 
-        storageService.deleteFile(fileName);
+        s3Task.delete(fileName);
 
         return UpdateUserProfileResponse.builder()
                 .msg(String.format(UserProfileCoreConstants.SUCCESSFULLY_DELETE_USER_ICON_MSG, fileName))
                 .build();
-    }
-
-    private File convertImageToFile(MultipartFile file) throws IOException
-    {
-        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        System.out.println(convFile);
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-        return convFile;
     }
 
     @Autowired
@@ -122,8 +91,41 @@ public class UserProfileServiceImpl implements UserProfileService
     private final UserProfileMapper profileMapper;
 
     @Autowired
-    private final StorageService storageService;
+    private final S3Task s3Task;
+}
 
-    private final Logger logger = LoggerFactory.getLogger(UserProfileServiceImpl.class);
+@Component
+@RequiredArgsConstructor
+class S3Task
+{
+    @Async
+    public void upload(String fileName, MultipartFile file) throws IOException
+    {
+        File image = convertImageToFile(file);
 
+        s3Service.uploadFile(fileName, image);
+
+        image.delete();
+    }
+
+    @Async
+    public void delete(String fileName)
+    {
+        s3Service.deleteFile(fileName);
+    }
+
+    private File convertImageToFile(MultipartFile file) throws IOException
+    {
+        File convFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+
+        FileOutputStream fos = new FileOutputStream(convFile);
+
+        fos.write(file.getBytes());
+        fos.close();
+
+        return convFile;
+    }
+
+    @Autowired
+    private final S3Service s3Service;
 }

@@ -14,6 +14,5 @@ public interface UserProfileService
 {
     UserProfile getUserProfile(String email);
     UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest request, String email) throws ParseException, IOException;
-    UpdateUserProfileResponse updateUserIcon(MultipartFile file, String email) throws IOException;
     UpdateUserProfileResponse deleteUserIcon(String email);
 }

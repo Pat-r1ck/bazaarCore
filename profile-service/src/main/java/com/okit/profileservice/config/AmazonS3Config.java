@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class StorageConfig
+public class AmazonS3Config
 {
     @Bean
     public AmazonS3 initialize()

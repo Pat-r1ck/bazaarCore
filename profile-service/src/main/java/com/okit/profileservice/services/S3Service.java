@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 
 @Service
-public interface StorageService
+public interface S3Service
 {
     void uploadFile(String fileName, File file);
     void deleteFile(String fileName);
