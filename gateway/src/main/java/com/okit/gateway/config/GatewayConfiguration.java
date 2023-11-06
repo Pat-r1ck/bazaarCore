@@ -19,9 +19,9 @@ public class GatewayConfiguration
                 .route("AUTH-CORE", r -> r.path("/api/v1/auth/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://AUTH-CORE"))
-                .route("PROFILE-SERVICE", r -> r.path("/api/v1/profile/**")
+                .route("RESOURCES-SERVICE", r -> r.path("/api/v1/resources/**")
                         .filters(f -> f.filter(filter))
-                        .uri("lb://PROFILE-SERVICE")
+                        .uri("lb://RESOURCES-SERVICE")
                 )
                 .build();
     }
