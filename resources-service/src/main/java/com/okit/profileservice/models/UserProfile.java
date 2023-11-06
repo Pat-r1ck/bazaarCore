@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @Entity
@@ -48,4 +49,7 @@ public class UserProfile
     @Max(value = 5, message = UserProfileCoreConstants.INVALID_RATING_MSG)
     @Column(name = "rating", nullable = false)
     private Integer rating;
+
+    @OneToMany(mappedBy = "owner")
+    private Set<Product> products;
 }
