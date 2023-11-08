@@ -1,5 +1,6 @@
 package com.okit.profileservice.services.implementations;
 
+import com.okit.profileservice.constants.S3Constants;
 import com.okit.profileservice.constants.UserProfileCoreConstants;
 import com.okit.profileservice.dto.UpdateUserProfileRequest;
 import com.okit.profileservice.dto.UpdateUserProfileResponse;
@@ -53,7 +54,7 @@ public class UserProfileServiceImpl implements UserProfileService
                     .lastName(request.getLastName())
                     .academicYear(request.getAcademicYear())
                     .dob(new SimpleDateFormat(DATE_FORMAT).parse(request.getDob()))
-                    .icon(icon == null ? null : fileName)
+                    .icon(icon == null ? null : S3Constants.S3_PREFIX + fileName)
                     .rating(0)
                     .build() :
                 profileOptional.get();

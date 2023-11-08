@@ -9,8 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -22,9 +22,10 @@ import java.util.UUID;
 public class Product
 {
     @Id
+    @Builder.Default
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, unique = true, updatable = false)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @NotEmpty(message = ProductCoreConstants.EMPTY_TITLE_MSG)
     @Column(name = "title", nullable = false)
@@ -41,11 +42,11 @@ public class Product
     @ElementCollection
     @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image", nullable = false)
-    private Set<String> images = new HashSet<>();
+    private List<String> images = new ArrayList<>();
 
     @Builder.Default
     @Column(name = "available", nullable = false)
-    private boolean available = false;
+    private boolean available = true;
 
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)

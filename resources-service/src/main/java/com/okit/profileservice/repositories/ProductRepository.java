@@ -2,9 +2,15 @@ package com.okit.profileservice.repositories;
 
 import com.okit.profileservice.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface ProductRepository extends JpaRepository<Product, UUID>
 {
+    @Query(value = "select * from product where id = ?1 limit 1",nativeQuery = true)
+    Optional<Product> findByUUID(UUID uuid);
 }

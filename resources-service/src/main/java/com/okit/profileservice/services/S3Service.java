@@ -12,11 +12,9 @@ import java.util.List;
 public interface S3Service
 {
     @Async
-    void uploadFiles(List<String> fileNames, List<MultipartFile> files) throws IOException;
+    void uploadFiles(List<MultipartFile> files, String directory) throws IOException;
     @Async
     void uploadFile(String fileName, MultipartFile file) throws IOException;
-    @Async
-    void deleteFiles(List<String> fileNames);
     @Async
     void deleteFile(String fileName);
 }

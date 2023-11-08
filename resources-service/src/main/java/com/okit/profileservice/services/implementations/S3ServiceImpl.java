@@ -3,8 +3,8 @@ package com.okit.profileservice.services.implementations;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.okit.profileservice.constants.S3Constants;
-import com.okit.profileservice.exceptions.MissMatchFileException;
+import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.transfer.TransferManager;
 import com.okit.profileservice.services.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,22 +25,23 @@ public class S3ServiceImpl implements S3Service
 {
     @Async
     @Override
-    public void uploadFiles(List<String> fileNames, List<MultipartFile> files) throws IOException
+    public void uploadFiles(List<MultipartFile> files, String directory) throws IOException
     {
-        int fileNamesSize = fileNames.size();
-        int filesSize = files.size();
+        List<File> images = convertImagesToFiles(files);
 
-        if(fileNamesSize != filesSize)
+        MultipleFileUpload upload = transferManager.uploadFileList(
+                bucketName, directory, new File("./"),images
+        );
+
+        try
         {
-            throw new MissMatchFileException(String.format(S3Constants.MISS_MATCH_FILE_MSG, fileNamesSize, filesSize));
+            upload.waitForCompletion();
+
+            images.forEach(File::delete);
         }
-
-        for(int i = 0 ; i < filesSize ; ++i)
+        catch (InterruptedException e)
         {
-            String fileName = fileNames.get(i);
-            MultipartFile file = files.get(i);
 
-            uploadFile(fileName, file);
         }
     }
 
@@ -55,16 +56,6 @@ public class S3ServiceImpl implements S3Service
         );
 
         image.delete();
-    }
-
-    @Async
-    @Override
-    public void deleteFiles(List<String> fileNames)
-    {
-        for(String fileName : fileNames)
-        {
-            deleteFile(fileName);
-        }
     }
 
     @Async
@@ -87,6 +78,23 @@ public class S3ServiceImpl implements S3Service
 
         return convFile;
     }
+
+    private List<File> convertImagesToFiles(List<MultipartFile> files)
+    {
+        return files.stream()
+                .map(f -> {
+                    try {
+                        return convertImageToFile(f);
+                    } catch (IOException e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
+    }
+
+    @Autowired
+    private final TransferManager transferManager;
 
     @Autowired
     private final AmazonS3 s3;
