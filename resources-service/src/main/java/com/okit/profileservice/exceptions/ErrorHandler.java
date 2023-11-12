@@ -33,4 +33,15 @@ public class ErrorHandler
                 HttpStatus.BAD_REQUEST
         );
     }
+
+    @ExceptionHandler({ProductNotFoundException.class})
+    public ResponseEntity<String> handleProductNotFoundException(
+            ProductNotFoundException exception
+    )
+    {
+        return new ResponseEntity<>(
+                String.format(S3Constants.PRODUCT_NOT_FOUND, exception.getMessage()),
+                HttpStatus.BAD_REQUEST
+        );
+    }
 }

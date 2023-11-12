@@ -2,6 +2,7 @@ package com.okit.profileservice.controllers;
 
 import com.okit.profileservice.dto.DomainResponse;
 import com.okit.profileservice.dto.UpdateProductRequest;
+import com.okit.profileservice.models.Product;
 import com.okit.profileservice.services.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -12,16 +13,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/resources/product")
 public class ProductController
 {
-    @GetMapping(value = "/query")
-    public ResponseEntity<String> testProduct()
+    @GetMapping(value = "/query/{id}")
+    public ResponseEntity<Product> getProduct(@PathVariable String id)
     {
-        return new ResponseEntity<>("Testing", HttpStatus.OK);
+        return new ResponseEntity<>(productService.getProduct(id), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/query")
+    public ResponseEntity<Set<Product>> getProductByEmail(@RequestParam(name = "email") String email)
+    {
+        return new ResponseEntity<>(productService.getProductByEmail(email), HttpStatus.OK);
     }
 
     @PostMapping(value = "/register",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

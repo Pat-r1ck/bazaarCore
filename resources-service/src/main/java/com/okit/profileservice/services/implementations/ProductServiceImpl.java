@@ -5,6 +5,7 @@ import com.okit.profileservice.constants.S3Constants;
 import com.okit.profileservice.dto.DomainResponse;
 import com.okit.profileservice.dto.UpdateProductRequest;
 import com.okit.profileservice.exceptions.EmailNotFoundException;
+import com.okit.profileservice.exceptions.ProductNotFoundException;
 import com.okit.profileservice.mappers.ProductMapper;
 import com.okit.profileservice.models.Product;
 import com.okit.profileservice.models.UserProfile;
@@ -20,12 +21,28 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService
 {
+    @Override
+    public Product getProduct(String id)
+    {
+        UUID uuid = UUID.fromString(id);
+
+        return productRepository.findByUUID(uuid)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+
+    @Override
+    public Set<Product> getProductByEmail(String email)
+    {
+        return productRepository.findProductByEmail(email);
+    }
+
     @Override
     public DomainResponse updateProduct(UpdateProductRequest request, String email) throws IOException
     {
@@ -47,9 +64,7 @@ public class ProductServiceImpl implements ProductService
 
         if(images != null)
         {
-            List<String> fileNames = formatFileName(product.getId(), images.size());
-
-            product.setImages(formatS3Url(fileNames));
+            product.setImages(formatS3Url(product.getId(), images));
 
             s3Service.uploadFiles(images, ProductCoreConstants.PRODUCT_IMAGES_DIRECTORY);
         }
@@ -63,23 +78,18 @@ public class ProductServiceImpl implements ProductService
                 .build();
     }
 
-    private List<String> formatFileName(UUID id, int size)
+    private List<String> formatS3Url(UUID id, List<MultipartFile> files)
     {
-        List<String> fileNames = new ArrayList<>();
+        List<String> s3Url = new ArrayList<>();
 
-        for(int i = 0 ; i < size ; ++i)
+        for(MultipartFile file : files)
         {
-            fileNames.add(id.toString() + "_" + i);
+            s3Url.add(
+                    S3Constants.s3UrlFormatter(S3Constants.productImagesDirectory(id) + file.getOriginalFilename())
+            );
         }
 
-        return fileNames;
-    }
-
-    private List<String> formatS3Url(List<String> fileNames)
-    {
-        return fileNames.stream()
-                .map(file -> S3Constants.S3_PREFIX + file)
-                .toList();
+        return s3Url;
     }
 
     @Autowired
