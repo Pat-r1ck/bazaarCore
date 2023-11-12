@@ -13,7 +13,8 @@ public class RoutesConfiguration
     public static final List<String> OPEN_API_ENDPOINTS = List.of(
             RoutesConstants.AUTH_PREFIX + RoutesConstants.REGISTER_ENDPOINT,
             RoutesConstants.AUTH_PREFIX + RoutesConstants.AUTHENTICATE_ENDPOINT,
-            RoutesConstants.AUTH_PREFIX + RoutesConstants.VALIDATE_ENDPOINT
+            RoutesConstants.AUTH_PREFIX + RoutesConstants.VALIDATE_ENDPOINT,
+            RoutesConstants.PRODUCT_PREFIX + RoutesConstants.QUERY_PRODUCT
     );
 
     public Predicate<ServerHttpRequest> isSecured =
