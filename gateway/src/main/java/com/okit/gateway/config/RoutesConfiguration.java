@@ -14,7 +14,11 @@ public class RoutesConfiguration
             RoutesConstants.AUTH_PREFIX + RoutesConstants.REGISTER_ENDPOINT,
             RoutesConstants.AUTH_PREFIX + RoutesConstants.AUTHENTICATE_ENDPOINT,
             RoutesConstants.AUTH_PREFIX + RoutesConstants.VALIDATE_ENDPOINT,
-            RoutesConstants.PRODUCT_PREFIX + RoutesConstants.QUERY_PRODUCT
+            RoutesConstants.PRODUCT_PREFIX + RoutesConstants.QUERY_PRODUCT,
+            "/v3/api-docs/",
+            "/swagger-ui/",
+            "/v2/api-docs/",
+            "/swagger-resources/"
     );
 
     public Predicate<ServerHttpRequest> isSecured =
