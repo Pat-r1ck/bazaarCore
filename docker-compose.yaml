@@ -2,7 +2,7 @@ version: '3'
 services:
   postgres-auth:
     image: postgres:alpine
-    container_name: postgres
+    container_name: postgres-auth
     restart: unless-stopped
     ports:
       - "5433:5432"
@@ -12,7 +12,7 @@ services:
       - POSTGRES_DB=authDB
   postgres-resource:
     image: postgres:alpine
-    container_name: postgres
+    container_name: postgres-resource
     restart: unless-stopped
     ports:
       - "5434:5432"
