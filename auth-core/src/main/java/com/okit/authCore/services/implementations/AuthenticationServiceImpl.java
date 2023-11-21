@@ -1,6 +1,7 @@
 package com.okit.authCore.services.implementations;
 
 import com.okit.authCore.dto.*;
+import com.okit.authCore.exceptions.DuplicateEmailException;
 import com.okit.authCore.exceptions.EmailNotFoundException;
 import com.okit.authCore.models.Role;
 import com.okit.authCore.models.User;
@@ -22,6 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import static com.okit.authCore.dto.StatusCode.REGISTER;
+import static com.okit.authCore.dto.StatusCode.AUTHENTICATE;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService
@@ -30,6 +34,9 @@ public class AuthenticationServiceImpl implements AuthenticationService
     public AuthenticationResponse register(RegisterRequest request) {
         Set<String> roleString = request.getRoles();
         Set<Role> roles = roleRepository.findByName(roleString);
+
+        if(userRepository.findByEmail(request.getEmail()).isPresent())
+            throw new DuplicateEmailException(request.getEmail());
 
         User user = User.builder()
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -47,15 +54,19 @@ public class AuthenticationServiceImpl implements AuthenticationService
 
         String token = jwtService.generateJwt(claims,user);
 
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        return new AuthenticationResponse(
+                String.format("%s has been registered", request.getEmail()),REGISTER.statusCode,token
+        );
     }
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
+
+        User user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new EmailNotFoundException(email));
+        logger.info("found user with username {}", email);
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -64,10 +75,6 @@ public class AuthenticationServiceImpl implements AuthenticationService
                 )
         );
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException(email));
-        logger.info("found user with username {}", email);
-
         List<String> roles = userRepository.findRoles(email);
         HashMap<String, Object> claims = new HashMap<>(){{
             put("roles", roles);
@@ -75,9 +82,9 @@ public class AuthenticationServiceImpl implements AuthenticationService
 
         String token = jwtService.generateJwt(claims,user);
 
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+        return new AuthenticationResponse(
+            String.format("%s signed in", request.getEmail()), AUTHENTICATE.statusCode, token
+        );
     }
 
     @Override

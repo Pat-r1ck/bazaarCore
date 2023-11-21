@@ -6,10 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationResponse
+public class AuthenticationResponse extends DomainResponse
 {
+    public AuthenticationResponse(String message, int code, String token)
+    {
+        super(message, code);
+        this.token = token;
+    }
+
     private String token;
 }
