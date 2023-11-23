@@ -12,9 +12,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProductRequest
+public class ProductDetailRequest
 {
-    private String id;
+//    private String id;
     private String title;
     private String description;
     private Integer price;

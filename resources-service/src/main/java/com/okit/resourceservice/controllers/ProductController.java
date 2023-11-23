@@ -1,7 +1,7 @@
 package com.okit.resourceservice.controllers;
 
 import com.okit.resourceservice.dto.DomainResponse;
-import com.okit.resourceservice.dto.UpdateProductRequest;
+import com.okit.resourceservice.dto.ProductDetailRequest;
 import com.okit.resourceservice.models.Product;
 import com.okit.resourceservice.services.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,15 +32,30 @@ public class ProductController
         return new ResponseEntity<>(productService.getProductByEmail(email), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/register",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<DomainResponse> updateProduct(
-            @ModelAttribute UpdateProductRequest productRequest,
+    @PostMapping(value = "/",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DomainResponse> registerProduct(
+            @ModelAttribute ProductDetailRequest productRequest,
             HttpServletRequest request
     ) throws IOException
     {
         final String email = request.getHeader("email");
 
-        return new ResponseEntity<>(productService.updateProduct(productRequest, email), HttpStatus.OK);
+        return new ResponseEntity<>(productService.registerProduct(productRequest, email), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<DomainResponse> updateProduct(
+            @ModelAttribute ProductDetailRequest productRequest,
+            @PathVariable(value = "id") String id,
+            HttpServletRequest request
+    ) throws IOException
+    {
+        final String email = request.getHeader("email");
+
+        return new ResponseEntity<>(
+                productService.updateProduct(productRequest, id, email),
+                HttpStatus.CREATED
+        );
     }
 
     @Autowired

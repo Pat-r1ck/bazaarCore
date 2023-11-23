@@ -3,7 +3,7 @@ package com.okit.resourceservice.services.implementations;
 import com.okit.resourceservice.constants.ProductCoreConstants;
 import com.okit.resourceservice.constants.S3Constants;
 import com.okit.resourceservice.dto.DomainResponse;
-import com.okit.resourceservice.dto.UpdateProductRequest;
+import com.okit.resourceservice.dto.ProductDetailRequest;
 import com.okit.resourceservice.exceptions.EmailNotFoundException;
 import com.okit.resourceservice.exceptions.ProductNotFoundException;
 import com.okit.resourceservice.mappers.ProductMapper;
@@ -44,21 +44,46 @@ public class ProductServiceImpl implements ProductService
     }
 
     @Override
-    public DomainResponse updateProduct(UpdateProductRequest request, String email) throws IOException
+    public DomainResponse registerProduct(ProductDetailRequest request, String email) throws IOException
     {
-        String id = request.getId();
-
         UserProfile userProfile = userProfileRepository.findByEmail(email)
                 .orElseThrow(() -> new EmailNotFoundException(email));
 
-        Product product = id != null
-                ? productRepository.findByUUID(UUID.fromString(id)).orElseThrow()
-                : Product.builder()
+        Product product = Product.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .owner(userProfile)
                 .build();
+
+        List<MultipartFile> images = request.getImages();
+
+        if(images != null)
+        {
+            product.setImages(formatS3Url(product.getId(), images));
+
+            s3Service.uploadFiles(images, ProductCoreConstants.PRODUCT_IMAGES_DIRECTORY);
+        }
+
+        productRepository.save(product);
+
+        return DomainResponse.builder()
+                .msg(String.format(ProductCoreConstants.SUCCESSFULLY_UPDATED_PRODUCT, product.getId().toString()))
+                .build();
+    }
+
+    @Override
+    public DomainResponse updateProduct(ProductDetailRequest request, String id, String email) throws IOException
+    {
+        UserProfile userProfile = userProfileRepository.findByEmail(email)
+                .orElseThrow(() -> new EmailNotFoundException(email));
+
+        Product product = productRepository.findByUUID(UUID.fromString(id)).orElseThrow();
+
+        if(!product.getOwner().getEmail().equals(email))
+        {
+            throw new EmailNotFoundException((email));
+        }
 
         List<MultipartFile> images = request.getImages();
 
