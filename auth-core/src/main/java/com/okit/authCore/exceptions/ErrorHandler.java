@@ -2,6 +2,8 @@ package com.okit.authCore.exceptions;
 
 import com.okit.authCore.constants.JwtCoreConstants;
 import com.okit.authCore.constants.UserCoreConstants;
+import com.okit.authCore.dto.DuplicateEmailExceptionResponse;
+import com.okit.authCore.dto.ErrorResponse;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,14 +18,30 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ErrorHandler
 {
     @ExceptionHandler({EmailNotFoundException.class})
-    public ResponseEntity<String> handleUsernameNotFoundException(
+    public ResponseEntity<ErrorResponse> handleEmailNotFoundException(
             EmailNotFoundException exception
     )
     {
+        System.out.println("I AM HEREEEEEEEEEEEEEEEEEEEEEEe");
         logger.error("username {} not found", exception.getMessage());
         return new ResponseEntity<>(
-                String.format(UserCoreConstants.USER_NOT_FOUND_MSG, exception.getMessage()),
-                HttpStatus.NOT_FOUND
+                new ErrorResponse(
+                        String.format(UserCoreConstants.USER_NOT_FOUND_MSG, exception.getMessage())
+                ),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler({DuplicateEmailException.class})
+    public ResponseEntity<ErrorResponse> handleDuplicateEmailException(
+            DuplicateEmailException exception
+    )
+    {
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        String.format(UserCoreConstants.DUPLICATE_EMAIL_MSG, exception.getMessage())
+                ) ,
+                HttpStatus.BAD_REQUEST
         );
     }
 
