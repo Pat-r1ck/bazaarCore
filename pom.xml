@@ -20,6 +20,7 @@
         <module>gateway</module>
         <module>auth-core</module>
         <module>resources-service</module>
+        <module>domain</module>
     </modules>
 
     <properties>
