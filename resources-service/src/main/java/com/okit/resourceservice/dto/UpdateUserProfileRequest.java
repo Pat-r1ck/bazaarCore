@@ -16,5 +16,7 @@ public class UpdateUserProfileRequest
     private String lastName;
     private Integer academicYear;
     private String dob;
-    private MultipartFile icon;
+
+    @Builder.Default
+    private MultipartFile icon = null;
 }

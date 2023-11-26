@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DomainResponse
 {
-    private String msg;
+    private String message;
+    private int code;
 }

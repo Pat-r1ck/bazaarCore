@@ -1,10 +1,11 @@
 package com.okit.resourceservice.controllers;
 
+import com.okit.resourceservice.dto.CreateUserProfileRequest;
+import com.okit.resourceservice.dto.CreateUserProfileResponse;
 import com.okit.resourceservice.dto.UpdateUserProfileRequest;
-import com.okit.resourceservice.dto.UpdateUserProfileResponse;
-import com.okit.resourceservice.models.UserProfile;
 import com.okit.resourceservice.services.UserProfileService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,36 +21,40 @@ import java.text.ParseException;
 @RequestMapping("/api/v1/resources/profile")
 public class UserProfileController
 {
-    @GetMapping
-    public ResponseEntity<UserProfile> getProfile(
-            HttpServletRequest request
-    )
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CreateUserProfileResponse> createUserProfile(
+        @ModelAttribute @Valid CreateUserProfileRequest profileRequest,
+        HttpServletRequest request
+    ) throws ParseException, IOException
     {
-        String email = extractEmail(request);
-
-        return new ResponseEntity<>(userProfileService.getUserProfile(email), HttpStatus.OK);
+        return new ResponseEntity<>(
+            userProfileService.createUserProfile(profileRequest, extractEmail(request)),
+            HttpStatus.CREATED
+        );
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<UpdateUserProfileResponse> updateUserProfile(
+    @GetMapping
+    public ResponseEntity<Object> getProfile(
+        HttpServletRequest request
+    ) {
+        return new ResponseEntity<Object>(
+            userProfileService.getUserProfile(extractEmail(request)).getResponse(),
+            HttpStatus.OK
+        );
+    }
+
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> updateUserProfile(
             @ModelAttribute UpdateUserProfileRequest profileRequest,
             HttpServletRequest request
     ) throws ParseException, IOException
     {
-        final String email = extractEmail(request);
-
-        return new ResponseEntity<>(userProfileService.updateUserProfile(profileRequest,email), HttpStatus.CREATED);
+        return new ResponseEntity<>(
+            userProfileService.updateUserProfile(profileRequest,extractEmail(request)).getResponse(), 
+            HttpStatus.OK
+        );
     }
 
-    @DeleteMapping
-    public ResponseEntity<UpdateUserProfileResponse> deleteUserProfileIcon(
-            HttpServletRequest request
-    )
-    {
-        final String email = extractEmail(request);
-
-        return new ResponseEntity<>(userProfileService.deleteUserIcon(email), HttpStatus.OK);
-    }
 
     private String extractEmail(HttpServletRequest request)
     {
