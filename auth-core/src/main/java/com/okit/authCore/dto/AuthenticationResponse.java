@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class AuthenticationResponse extends DomainResponse
 {
-    public AuthenticationResponse(String message, int code, Map<String,String> data )
+    public AuthenticationResponse(String message, int code, Map<String,String> data)
     {
         super(message, code);
         this.data = data;
