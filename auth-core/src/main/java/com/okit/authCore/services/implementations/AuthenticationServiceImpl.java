@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.okit.authCore.dto.StatusCode.*;
@@ -54,8 +55,10 @@ public class AuthenticationServiceImpl implements AuthenticationService
         String token = jwtService.generateJwt(claims,user);
 
         return new AuthenticationResponse(
-                String.format("%s has been registered", request.getEmail()),REGISTER.statusCode,token
-        );
+                "user registered successfully",
+                REGISTER.statusCode,
+                Map.of("token", token)
+            );
     }
 
     @Override
@@ -87,7 +90,7 @@ public class AuthenticationServiceImpl implements AuthenticationService
         String token = jwtService.generateJwt(claims,user);
 
         return new AuthenticationResponse(
-            String.format("%s signed in", request.getEmail()), AUTHENTICATE.statusCode, token
+            String.format("user %s authenticated successfully", request.getEmail()), AUTHENTICATE.statusCode, Map.of("token", token)
         );
     }
 
