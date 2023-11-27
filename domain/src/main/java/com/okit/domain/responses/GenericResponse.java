@@ -15,9 +15,11 @@ public class GenericResponse
         response.put("code", code);
     }
 
-    public void add(String key, Object value)
+    public GenericResponse add(String key, Object value)
     {
         response.put(key, value);
+
+        return this;
     }
 
     private final HashMap<String,Object> response;
