@@ -8,7 +8,7 @@ import com.okit.authCore.repositories.RoleRepository;
 import com.okit.authCore.repositories.UserRepository;
 import com.okit.authCore.services.AuthenticationService;
 import com.okit.authCore.services.JwtService;
-import com.okit.domain.exceptions.GenericException;
+import com.okit.authCore.exceptions.GenericException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

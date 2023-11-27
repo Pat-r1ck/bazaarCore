@@ -1,4 +1,4 @@
-package com.okit.domain.responses;
+package com.okit.authCore.dto;
 
 import lombok.Getter;
 
