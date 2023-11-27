@@ -15,5 +15,5 @@ amazonProperties:
   endpointUrl: https://s3.us-east-1.amazonaws.com
   accessKey: ${ACCESS_AWS_KEY}
   secretKey: ${SECRET_AWS_KEY}
-  bucketName: ustbazaar
+  bucketName: bazaarbucket
   region: us-east-1

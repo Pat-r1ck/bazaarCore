@@ -1,15 +1,13 @@
 package com.okit.resourceservice.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateUserProfileResponse
+public class UpdateUserProfileResponse extends DomainResponse
 {
     private String msg;
 }

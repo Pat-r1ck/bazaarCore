@@ -1,5 +1,6 @@
 package com.okit.resourceservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.okit.resourceservice.constants.ProductCoreConstants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -22,14 +23,22 @@ import java.util.UUID;
 public class Product
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
+    private Long id;
+
     @Builder.Default
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", nullable = false, unique = true, updatable = false)
-    private UUID id = UUID.randomUUID();
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private UUID uuid = UUID.randomUUID();
 
     @NotEmpty(message = ProductCoreConstants.EMPTY_TITLE_MSG)
     @Column(name = "title", nullable = false)
     private String title;
+
+    @NotEmpty(message = ProductCoreConstants.EMPTY_CATEGORY_MSG)
+    @Column(name = "category", nullable = false)
+    private String category;
 
     @Column(name = "description")
     private String description;
@@ -48,6 +57,7 @@ public class Product
     @Column(name = "available", nullable = false)
     private boolean available = true;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "owner", nullable = false)
     private UserProfile owner;

@@ -1,4 +1,4 @@
-package com.okit.domain.responses;
+package com.okit.resourceservice.dto;
 
 import lombok.Getter;
 

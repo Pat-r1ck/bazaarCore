@@ -23,6 +23,10 @@ import java.util.Set;
 public class UserProfile
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true, updatable = false)
+    private Long id;
+
     @Email(message = UserProfileCoreConstants.INVALID_EMAIL_MSG)
     @Column(name = "email", nullable = false, unique = true, updatable = false)
     private String email;

@@ -5,11 +5,10 @@ import lombok.Getter;
 @Getter
 public class GenericException extends RuntimeException
 {
-    public GenericException(String msg, int code)
+    public GenericException(String message, int code)
     {
-        super(msg);
+        super(message);
         this.code = code;
     }
-
     private final int code;
 }

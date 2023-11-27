@@ -20,5 +20,5 @@ public class GenericResponse
         response.put(key, value);
     }
 
-    private final HashMap<String, Object> response;
+    private final HashMap<String,Object> response;
 }

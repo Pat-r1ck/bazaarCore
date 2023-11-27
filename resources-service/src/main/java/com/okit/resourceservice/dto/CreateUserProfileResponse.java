@@ -1,6 +1,8 @@
-package com.okit.authCore.dto;
+package com.okit.resourceservice.dto;
 
 import java.util.Map;
+
+import com.okit.resourceservice.models.UserProfile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,12 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class AuthenticationResponse extends DomainResponse
+public class CreateUserProfileResponse extends DomainResponse
 {
-    public AuthenticationResponse(String message, int code, Map<String,String> data)
+    public CreateUserProfileResponse(String message, int code, Map<String,UserProfile> data)
     {
         super(message, code);
         this.data = data;
     }
-    private Map<String, String> data;
+    private Map<String, UserProfile> data;
 }

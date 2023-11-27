@@ -8,7 +8,7 @@ import com.okit.authCore.repositories.RoleRepository;
 import com.okit.authCore.repositories.UserRepository;
 import com.okit.authCore.services.AuthenticationService;
 import com.okit.authCore.services.JwtService;
-import com.okit.domain.exceptions.GenericException;
+import com.okit.authCore.exceptions.GenericException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com.okit.authCore.dto.StatusCode.*;
@@ -54,8 +55,10 @@ public class AuthenticationServiceImpl implements AuthenticationService
         String token = jwtService.generateJwt(claims,user);
 
         return new AuthenticationResponse(
-                String.format("%s has been registered", request.getEmail()),REGISTER.statusCode,token
-        );
+                "user registered successfully",
+                REGISTER.statusCode,
+                Map.of("token", token)
+            );
     }
 
     @Override
@@ -87,7 +90,7 @@ public class AuthenticationServiceImpl implements AuthenticationService
         String token = jwtService.generateJwt(claims,user);
 
         return new AuthenticationResponse(
-            String.format("%s signed in", request.getEmail()), AUTHENTICATE.statusCode, token
+            String.format("user %s authenticated successfully", request.getEmail()), AUTHENTICATE.statusCode, Map.of("token", token)
         );
     }
 

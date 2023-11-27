@@ -1,4 +1,4 @@
-package com.okit.authCore.dto;
+package com.okit.resourceservice.dto;
 
 import java.util.Map;
 
@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class AuthenticationResponse extends DomainResponse
+public class CreateProductResponse extends DomainResponse
 {
-    public AuthenticationResponse(String message, int code, Map<String,String> data)
+    public CreateProductResponse(String message, int code, Map<String,String> data)
     {
         super(message, code);
         this.data = data;
