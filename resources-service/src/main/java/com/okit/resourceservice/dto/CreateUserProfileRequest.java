@@ -1,6 +1,5 @@
 package com.okit.resourceservice.dto;
 
-import org.springframework.context.annotation.Description;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

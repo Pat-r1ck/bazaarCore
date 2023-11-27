@@ -1,18 +1,26 @@
 package com.okit.resourceservice.services;
 
-import com.okit.resourceservice.dto.DomainResponse;
+import com.okit.resourceservice.dto.CreateProductRequest;
+import com.okit.resourceservice.dto.GenericResponse;
 import com.okit.resourceservice.dto.ProductDetailRequest;
-import com.okit.resourceservice.models.Product;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public interface ProductService
 {
-    Product getProduct(String id);
-    Set<Product> getProductByEmail(String email);
-    DomainResponse registerProduct(ProductDetailRequest request, String email) throws IOException;
-    DomainResponse updateProduct(ProductDetailRequest request, String id, String email) throws IOException;
+    GenericResponse createProduct(CreateProductRequest request, String email) throws IOException;
+    // GenericResponse updateProduct(ProductDetailRequest request, String id, String email) throws IOException;
+    // GenericResponse deleteProduct(String id, String email) throws IOException;
+
+    GenericResponse getAllProduct();
+    GenericResponse getProduct(UUID uuid);
+    GenericResponse getUserProductsListing(String email);
+
+    // Product getProduct(String id);
+    // Set<Product> getProductByEmail(String email);
+    // GenericResponse updateProduct(ProductDetailRequest request, String id, String email) throws IOException;
 }

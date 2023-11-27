@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -47,11 +48,12 @@ public class UserProfileServiceImpl implements UserProfileService
             throw new GenericException("Email " + email + " already registered", 4);
         }
 
-        final String fileName = "icon_" + email;
+        final String fileName = "icon_" + request.getFirstName() + "_" + request.getLastName();
         final MultipartFile icon = request.getIcon();
+        String key = null;
         if(!icon.isEmpty())
         {
-            s3.uploadFile(fileName, icon);
+            key = s3.uploadFile(fileName, icon);
         }
 
         UserProfile userProfile = UserProfile.builder()
@@ -60,7 +62,7 @@ public class UserProfileServiceImpl implements UserProfileService
                 .lastName(request.getLastName())
                 .academicYear(request.getAcademicYear())
                 .dob(dob)
-                .icon(icon.isEmpty() ? null : S3Constants.S3_PREFIX + fileName)
+                .icon(icon.isEmpty() ? null : S3Constants.PRODUCT_IMAGES_DIRECTORY + key)
                 .rating(0)
                 .build();
 
@@ -112,12 +114,13 @@ public class UserProfileServiceImpl implements UserProfileService
         if (dob != null) {
             userProfile.setDob(dob);
         }
-        
-        final String fileName = "icon_" + email;
+
+        final String fileName = "icon_" + request.getFirstName() + "_" + request.getLastName();
+        String key = null;
         if (request.getIcon() != null && !request.getIcon().isEmpty()) {
-            s3.uploadFile(fileName, request.getIcon());
-        }        
-        userProfile.setIcon(request.getIcon().isEmpty() ? null : S3Constants.S3_PREFIX + fileName);
+            key = s3.uploadFile(fileName, request.getIcon());
+        }
+        userProfile.setIcon(request.getIcon().isEmpty() ? null : S3Constants.PRODUCT_IMAGES_DIRECTORY + key);
 
         profileMapper.updateUserProfile(request, userProfile);
         userProfileRepository.save(userProfile);
